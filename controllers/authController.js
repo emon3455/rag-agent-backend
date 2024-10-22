@@ -4,14 +4,14 @@ const User = require("../model/userSchema");
 // get all user
 async function getAllUser(req, res) {
   try {
-    const user = await User.find().populate("user");
+    const user = await User.find()
     if (!user || user.length === 0) {
       return res.status(200).json([]);
     }
     res.json(user);
   } catch (error) {
     console.error("Error fetching all agents:", error.message);
-    res.status(500).json({ detail: "Internal Server Error" });
+    res.status(500).json({ detail: "Internal Server Error", error: error.message });
   }
 }
 
