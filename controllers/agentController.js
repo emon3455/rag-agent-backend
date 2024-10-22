@@ -84,9 +84,9 @@ async function getAllAgents(req, res) {
   try {
     const agents = await Agent.find().populate("user");
     if (!agents || agents.length === 0) {
-      return res.status(404).json({ detail: "No agents found" });
+      return res.status(200).json([]);
     }
-    res.json({ agents });
+    res.json(agents);
   } catch (error) {
     console.error("Error fetching all agents:", error.message);
     res.status(500).json({ detail: "Internal Server Error" });
