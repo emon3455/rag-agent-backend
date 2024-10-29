@@ -29,9 +29,17 @@ function cosineSimilarity(vec1, vec2) {
   return dotProduct / (magnitude1 * magnitude2);
 }
 
-async function retrieveRelevantChunks(knowledgeBase, query, k = 3) {
+async function retrieveRelevantChunks(knowledgeBase, query, k = 5, chunkSize = 300) {
   try {
-    const knowledgeChunks = knowledgeBase.split("\n\n");
+    const knowledgeChunks = [];
+    for (let i = 0; i < knowledgeBase.length; i += chunkSize) {
+      const chunk = knowledgeBase.slice(i, i + chunkSize).trim();
+      if (chunk) {
+        knowledgeChunks.push(chunk);
+      }
+    }
+
+    // Generate embeddings for each chunk and the query
     const chunkEmbeddings = await generateEmbeddings(knowledgeChunks);
     const queryEmbedding = await generateEmbeddings([query]);
 
@@ -39,22 +47,26 @@ async function retrieveRelevantChunks(knowledgeBase, query, k = 3) {
       throw new Error("Empty embeddings returned from OpenAI API");
     }
 
+    // Calculate cosine similarities between the query and each chunk embedding
     const similarities = chunkEmbeddings.map((chunkEmb) =>
       cosineSimilarity(queryEmbedding[0], chunkEmb)
     );
 
+    // Retrieve the top-k chunks based on similarity scores
     const topKIndices = similarities
       .map((sim, index) => ({ sim, index }))
       .sort((a, b) => b.sim - a.sim)
       .slice(0, k)
       .map(({ index }) => index);
 
+    // Return the most relevant chunks
     return topKIndices.map((index) => knowledgeChunks[index]);
   } catch (error) {
     console.error("Error retrieving relevant chunks:", error.message);
     throw new Error("Internal Server Error");
   }
 }
+
 
 async function ragChatgpt(agent, query) {
   try {
@@ -75,7 +87,7 @@ async function ragChatgpt(agent, query) {
     return response.choices[0].message.content;
   } catch (error) {
     console.error("Error generating response:", error.message);
-    throw new Error("Internal Server Error");
+    return "Sorry for the inconvenience, the AI is not responding at the moment.";
   }
 }
 
@@ -143,8 +155,8 @@ async function askQuestion(req, res) {
     const answer = await ragChatgpt(agent, question);
     res.json({ answer });
   } catch (error) {
-    console.error("Error in ask_question:", error.message);
-    res.status(500).json({ detail: "Internal Server Error" });
+    console.error("Error in ask_question:", error);
+    res.json({ answer: "Sorry for the inconvenience, the AI is not responding at the moment." });
   }
 }
 
