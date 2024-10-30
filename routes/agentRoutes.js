@@ -5,6 +5,8 @@ const {
   askQuestion,
   getAgentsForUser,
   getAllAgents,
+  updateAgent,
+  deleteAgent
 } = require("../controllers/agentController");
 
 router.get("/", getAllAgents);
@@ -12,6 +14,10 @@ router.get("/", getAllAgents);
 router.get("/userAllAgent", getAgentsForUser);
 
 router.post("/", createAgent);
+
+router.put("/", updateAgent);
+
+router.delete("/", deleteAgent);
 
 router.post("/ask-question", askQuestion);
 

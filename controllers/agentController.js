@@ -160,9 +160,53 @@ async function askQuestion(req, res) {
   }
 }
 
+// updateAgent
+async function updateAgent(req, res) {
+  try {
+    const { agentId, email, agent_name, knowledge, prompt } = req.body;
+
+    const updatedAgent = await Agent.findByIdAndUpdate(
+      agentId,
+      { email, agent_name, knowledge, prompt },
+    );
+
+    if (!updatedAgent) {
+      return res.status(404).json({ detail: "Agent not found." });
+    }
+
+    res.json({ message: "Agent updated successfully", updatedAgent });
+  } catch (error) {
+    console.error("Error updating agent:", error.message);
+    res.status(500).json({ detail: "Internal Server Error" });
+  }
+}
+
+// deleteAgent
+async function deleteAgent(req, res) {
+  try {
+    const { agentId } = req.body;
+
+    const deletedAgent = await Agent.findByIdAndDelete(agentId);
+    if (!deletedAgent) {
+      return res.status(404).json({ detail: "Agent not found." });
+    }
+
+    // Also remove the agent from the user's agents list
+    await User.findByIdAndUpdate(deletedAgent.user, { $pull: { agents: agentId } });
+
+    res.json({ message: "Agent deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting agent:", error.message);
+    res.status(500).json({ detail: "Internal Server Error" });
+  }
+}
+
+
 module.exports = {
   createAgent,
   askQuestion,
   getAgentsForUser,
   getAllAgents,
+  updateAgent,
+  deleteAgent
 };
