@@ -105,6 +105,23 @@ async function getAllAgents(req, res) {
   }
 }
 
+// Controller to fetch agent info by ID
+async function getAgentInfoById(req, res) {
+  try {
+    const { id } = req.params;
+    const agent = await Agent.findById(id);
+
+    if (!agent) {
+      return res.status(404).json({ message: "Agent not found" });
+    }
+
+    res.status(200).json(agent);
+  } catch (error) {
+    console.error("Error fetching agent by ID:", error.message);
+    res.status(500).json({ detail: "Internal Server Error", error: error.message });
+  }
+}
+
 // getAgentsForUser
 async function getAgentsForUser(req, res) {
   try {
@@ -208,5 +225,6 @@ module.exports = {
   getAgentsForUser,
   getAllAgents,
   updateAgent,
-  deleteAgent
+  deleteAgent,
+  getAgentInfoById
 };

@@ -6,10 +6,13 @@ const {
   getAgentsForUser,
   getAllAgents,
   updateAgent,
-  deleteAgent
+  deleteAgent,
+  getAgentInfoById
 } = require("../controllers/agentController");
 
 router.get("/", getAllAgents);
+
+router.get("/:id", getAgentInfoById);
 
 router.get("/userAllAgent", getAgentsForUser);
 

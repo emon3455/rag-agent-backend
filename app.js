@@ -36,6 +36,33 @@ app.get('/', (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/agents', agentRoutes);
 
+app.get('/widget.js', (req, res) => {
+  const agentId = req.query.agentId;
+
+  if (!agentId) {
+    return res.status(400).send(`console.error("Agent ID is required.");`);
+  }
+
+  res.type('text/javascript');
+  res.send(`
+    (function () {
+      const chatWidget = document.createElement("div");
+      chatWidget.style.position = "fixed";
+      chatWidget.style.bottom = "10px";
+      chatWidget.style.right = "10px";
+      chatWidget.style.width = "350px";
+      chatWidget.style.height = "500px";
+      chatWidget.style.boxShadow = "0px 4px 8px rgba(0, 0, 0, 0.2)";
+      chatWidget.style.borderRadius = "10px";
+      chatWidget.style.overflow = "hidden";
+
+      chatWidget.innerHTML = '<iframe src="https://rag-agent-frontend.vercel.app/agent-widget/${agentId}" width="100%" height="100%" style="border: none;"></iframe>';
+      document.body.appendChild(chatWidget);
+    })();
+  `);
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
