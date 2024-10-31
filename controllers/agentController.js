@@ -122,14 +122,15 @@ async function getAgentInfoById(req, res) {
   }
 }
 
-// getAgentsForUser
 async function getAgentsForUser(req, res) {
   try {
-    const userId = req.query.userId;
+    const {userId} = req.query;
+
     const user = await User.findById(userId).populate("agents");
     if (!user) {
       return res.status(404).json({ detail: "User not found" });
     }
+
     res.json({ agents: user.agents });
   } catch (error) {
     console.error("Error fetching agents:", error.message);

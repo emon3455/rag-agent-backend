@@ -12,9 +12,9 @@ const {
 
 router.get("/", getAllAgents);
 
-router.get("/:id", getAgentInfoById);
-
 router.get("/userAllAgent", getAgentsForUser);
+
+router.get("/:id", getAgentInfoById);
 
 router.post("/", createAgent);
 
