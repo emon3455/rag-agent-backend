@@ -78,7 +78,7 @@ async function ragChatgpt(agent, query) {
       messages: [
         {
           role: "system",
-          content: `Your prompt is: ${agent.prompt} Here is the context: ${context}. Make sure that you haven't answered anything outside the prompt. If asked any question outside the prompt, then politely reply that this is out of your knowledge and tell them if they want to know anything related to your context.`,
+          content: `Your prompt is: ${agent.prompt} Here is the context: ${context}.Provide the answer in markdown format. And make sure you response as fast as possible and try to give response as small as possible. So that user get a feel that he is talking with human. Make sure that you haven't answered anything outside the prompt. If asked any question outside the prompt, then politely reply that this is out of your knowledge and tell them if they want to know anything related to your context.`,
         },
         { role: "user", content: `Question: ${query}\nAnswer:` },
       ],
